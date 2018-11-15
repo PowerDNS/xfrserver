@@ -1,6 +1,7 @@
 import dns, dns.rcode, dns.zone
 import socket
 import struct
+import sys
 import threading
 
 class AXFRServer(object):
