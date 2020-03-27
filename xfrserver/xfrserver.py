@@ -19,11 +19,12 @@ class AXFRServer(object):
 
     def _getRecordsForSerial(self, serial):
         ret = []
-        for i in dns.zone.from_text(self._zones[serial], relativize=False).iterate_rdatasets():
-            n, rds = i
-            rrs=dns.rrset.RRset(n, rds.rdclass, rds.rdtype)
-            rrs.update(rds)
-            ret.append(rrs)
+        for j in self._zones[serial][1:]:
+            for i in dns.zone.from_text(self._zones[serial][0] + '\n' + j, relativize=False, check_origin=False).iterate_rdatasets():
+                n, rds = i
+                rrs=dns.rrset.RRset(n, rds.rdclass, rds.rdtype)
+                rrs.update(rds)
+                ret.append(rrs)
 
         # now stick a SOA at the end
         ret.append(ret[0])
@@ -42,9 +43,6 @@ class AXFRServer(object):
         print("current serial is %d, moving to %d" % (self._currentSerial, newSerial))
         if newSerial == self._currentSerial:
             return False
-
-        if newSerial != self._currentSerial + 1:
-            raise AssertionError("Asking the AXFR server to serve serial %d, already serving %d" % (newSerial, self._currentSerial))
 
         if newSerial not in self._zones:
             raise AssertionError("Asking the AXFR server to serve serial %d, but we don't have a corresponding zone" % (newSerial))
