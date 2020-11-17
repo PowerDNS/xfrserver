@@ -56,7 +56,7 @@ class AXFRServer(object):
         records = []
 
         if (message.question[0].rdtype == dns.rdatatype.AXFR) or \
-           (message.question[0].rdtype == dns.rdatatype.IXFR and message.authority[0].items[0].serial < self._currentSerial):
+           (message.question[0].rdtype == dns.rdatatype.IXFR and message.authority[0][0].serial < self._currentSerial):
             records = self._getRecordsForSerial(self._currentSerial)
         else:
             # IXFR request for current version of zone
